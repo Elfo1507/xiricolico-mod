@@ -74,6 +74,7 @@ crash-reports/
 
 # CursorRIPER Framework (development only)
 .memory-bank/
+.riper-docs/
 ripersigma-copilot-v105.md
 PADROES_IMPLEMENTADOS.md
 .github/copilot-instructions.md

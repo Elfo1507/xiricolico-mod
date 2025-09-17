@@ -2,9 +2,9 @@ name: Build and Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/**', 'story/**', 'hotfix/**', 'release-*' ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop, 'feature/**', 'release-*' ]
 
 jobs:
   build:
@@ -33,19 +33,131 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
       
+    - name: Validate branch naming
+      if: github.event_name == 'push' && !contains(fromJson('["refs/heads/main", "refs/heads/develop"]'), github.ref)
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        echo "Validating branch name: $BRANCH_NAME"
+        
+        if [[ "$BRANCH_NAME" =~ ^story/.+ ]]; then
+          echo "✅ Story branch detected: $BRANCH_NAME"
+        elif [[ "$BRANCH_NAME" =~ ^feature/.+ ]]; then
+          echo "✅ Feature branch detected: $BRANCH_NAME"
+        elif [[ "$BRANCH_NAME" =~ ^hotfix/.+ ]]; then
+          echo "✅ Hotfix branch detected: $BRANCH_NAME"
+        elif [[ "$BRANCH_NAME" =~ ^release-[0-9]+\.[0-9]+\.[0-9]+.* ]]; then
+          echo "✅ Release branch detected: $BRANCH_NAME"
+        else
+          echo "❌ Branch name '$BRANCH_NAME' does not follow gitflow convention"
+          echo "✅ Valid patterns:"
+          echo "   - story/your-story-name"
+          echo "   - feature/your-feature-name"
+          echo "   - hotfix/your-fix-name"
+          echo "   - release-x.x.x/"
+          exit 1
+        fi
+        
+    - name: Validate version format (release branches)
+      if: startsWith(github.ref, 'refs/heads/release-')
+      run: |
+        BRANCH_NAME=${GITHUB_REF#refs/heads/}
+        VERSION=${BRANCH_NAME#release-}
+        VERSION=${VERSION%/}
+        
+        if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "❌ Release branch must follow semantic versioning: release-x.x.x/"
+          echo "❌ Current: $BRANCH_NAME"
+          echo "✅ Expected format: release-1.2.0/"
+          exit 1
+        fi
+        
+        echo "✅ Valid release version: $VERSION"
+      
     - name: Build with Gradle
       run: ./gradlew build
+      
+    - name: Run tests
+      run: ./gradlew test
+      continue-on-error: false
       
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       if: success()
       with:
-        name: mod-jar
+        name: mod-jar-${{ github.sha }}
         path: build/libs/*.jar
+        retention-days: 30
+        
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ github.sha }}
+        path: build/test-results/
+        retention-days: 7
         
     - name: Upload build reports
       uses: actions/upload-artifact@v3
       if: failure()
       with:
-        name: build-reports
+        name: build-reports-${{ github.sha }}
         path: build/reports/
+        retention-days: 7
+
+  # Job para validar PRs seguindo GitFlow
+  validate-gitflow-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Validate PR GitFlow rules
+      run: |
+        echo "Validating PR: ${{ github.head_ref }} → ${{ github.base_ref }}"
+        
+        # Regras para PR para main
+        if [[ "${{ github.base_ref }}" == "main" ]]; then
+          if [[ ! "${{ github.head_ref }}" =~ ^release-[0-9]+\.[0-9]+\.[0-9]+.* ]]; then
+            echo "❌ PRs to main must be from release-x.x.x/ branches only"
+            echo "❌ Current head: ${{ github.head_ref }}"
+            echo "✅ Valid format: release-1.2.0/"
+            exit 1
+          fi
+        fi
+        
+        # Regras para PR para release
+        if [[ "${{ github.base_ref }}" =~ ^release-.+ ]]; then
+          if [[ ! "${{ github.head_ref }}" =~ ^(feature|hotfix)/.+ ]]; then
+            echo "❌ PRs to release branches must be from feature/* or hotfix/* only"
+            echo "❌ Current head: ${{ github.head_ref }}"
+            exit 1
+          fi
+        fi
+        
+        # Regras para PR para feature
+        if [[ "${{ github.base_ref }}" =~ ^feature/.+ ]]; then
+          if [[ ! "${{ github.head_ref }}" =~ ^story/.+ ]]; then
+            echo "❌ PRs to feature branches must be from story/* only"
+            echo "❌ Current head: ${{ github.head_ref }}"
+            exit 1
+          fi
+        fi
+        
+        # Regras para PR para develop (aceita qualquer branch)
+        if [[ "${{ github.base_ref }}" == "develop" ]]; then
+          echo "✅ PR to develop branch accepted from any branch type"
+        fi
+        
+        echo "✅ GitFlow PR validation passed"
+
+  # Job específico para validar PRs para main
+  validate-main-pr:
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Validate PR to main
+      run: |
+        if [[ ! "${{ github.head_ref }}" =~ ^release-[0-9]+\.[0-9]+\.[0-9]+.* ]]; then
+          echo "❌ PRs to main must be from release-x.x.x/ branches only"
+          echo "✅ Current head branch: ${{ github.head_ref }}"
+          exit 1
+        fi
+        echo "✅ PR to main from valid release branch: ${{ github.head_ref }}"

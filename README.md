@@ -72,20 +72,46 @@ src/main/java/com/xiricolico/mod/
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to:
+We welcome contributions! We use a **simplified GitFlow workflow** to maintain code quality and organized development.
 
-- Report bugs and request features
-- Submit code improvements
-- Add textures and assets
-- Improve documentation
+### 🌳 Quick GitFlow Guide
 
-### Quick Start for Contributors
+```bash
+# 🆕 Start a new feature
+git checkout develop
+git checkout -b feature/your-amazing-feature
+
+# 🚨 Create a hotfix
+git checkout main  
+git checkout -b hotfix/critical-bug-fix
+
+# 🚀 Use our helper script
+./scripts/gitflow.sh feature my-new-feature
+./scripts/gitflow.sh status
+```
+
+### 📋 Branch Rules
+- **`main`**: Production releases only (owner approval required)
+- **`develop`**: Integration branch (default for PRs)
+- **`feature/*`**: New features (merge to develop)
+- **`hotfix/*`**: Critical fixes (merge to main)
+
+For detailed guidelines, see our [Contributing Guide](CONTRIBUTING.md).
+
+### 🔧 Quick Start for Contributors
 1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
+2. Create feature branch: `feature/amazing-feature`
 3. Make your changes and test them
-4. Commit your changes: `git commit -m 'Add amazing feature'`
-5. Push to the branch: `git push origin feature/amazing-feature`
-6. Open a Pull Request
+4. Push and create PR to `develop`
+5. Wait for review and approval
+
+## 🔒 Repository Protection
+
+- ✅ **Branch Protection**: Main and develop branches are protected
+- ✅ **Required Reviews**: All PRs require approval
+- ✅ **CI/CD Checks**: Automated testing and validation
+- ✅ **Code Owners**: Core files require owner review
+- ✅ **GitFlow Validation**: Branch naming conventions enforced
 
 ## 📄 License
 

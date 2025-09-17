@@ -1,0 +1,17 @@
+# Global code owners
+# These users will be requested for review when anyone opens a pull request
+* @Elfo1507
+
+# Specific file/directory ownership
+# Core mod files require owner approval
+/src/main/java/com/xiricolico/mod/XiricolicoMod.java @Elfo1507
+/src/main/java/com/xiricolico/mod/core/ @Elfo1507
+/gradle.properties @Elfo1507
+/src/main/resources/META-INF/mods.toml @Elfo1507
+
+# CI/CD and workflow files
+/.github/ @Elfo1507
+
+# Documentation
+/README.md @Elfo1507
+/CONTRIBUTING.md @Elfo1507
