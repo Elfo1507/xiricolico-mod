@@ -47,6 +47,13 @@ jobs:
           echo "✅ Hotfix branch detected: $BRANCH_NAME"
         elif [[ "$BRANCH_NAME" =~ ^release-[0-9]+\.[0-9]+\.[0-9]+.* ]]; then
           echo "✅ Release branch detected: $BRANCH_NAME"
+          # Extract and validate version
+          VERSION=${BRANCH_NAME#release-}
+          VERSION=${VERSION%/}
+          MAJOR=$(echo "$VERSION" | cut -d. -f1)
+          MINOR=$(echo "$VERSION" | cut -d. -f2)
+          PATCH=$(echo "$VERSION" | cut -d. -f3)
+          echo "   📊 Version: $MAJOR.$MINOR.$PATCH (MAJOR.MINOR.PATCH)"
         else
           echo "❌ Branch name '$BRANCH_NAME' does not follow gitflow convention"
           echo "✅ Valid patterns:"
@@ -65,13 +72,26 @@ jobs:
         VERSION=${VERSION%/}
         
         if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "❌ Release branch must follow semantic versioning: release-x.x.x/"
+          echo "❌ Release branch must follow semantic versioning: release-x.y.z/"
           echo "❌ Current: $BRANCH_NAME"
-          echo "✅ Expected format: release-1.2.0/"
+          echo "✅ Expected format: release-12.8.23/ or release-1.11.4/"
+          echo "📋 Version format:"
+          echo "   - MAJOR.MINOR.PATCH (e.g., 12.8.23)"
+          echo "   - MAJOR: Breaking changes (incompatible API changes)"
+          echo "   - MINOR: New features (backwards compatible)"
+          echo "   - PATCH: Bug fixes and small improvements"
           exit 1
         fi
         
-        echo "✅ Valid release version: $VERSION"
+        # Extract version numbers
+        MAJOR=$(echo "$VERSION" | cut -d. -f1)
+        MINOR=$(echo "$VERSION" | cut -d. -f2)
+        PATCH=$(echo "$VERSION" | cut -d. -f3)
+        
+        echo "✅ Valid semantic version: $VERSION"
+        echo "   📊 MAJOR: $MAJOR (breaking changes)"
+        echo "   🆕 MINOR: $MINOR (new features)"
+        echo "   🔧 PATCH: $PATCH (bug fixes)"
       
     - name: Build with Gradle
       run: ./gradlew build
@@ -156,8 +176,25 @@ jobs:
     - name: Validate PR to main
       run: |
         if [[ ! "${{ github.head_ref }}" =~ ^release-[0-9]+\.[0-9]+\.[0-9]+.* ]]; then
-          echo "❌ PRs to main must be from release-x.x.x/ branches only"
+          echo "❌ PRs to main must be from release-x.y.z/ branches only"
           echo "✅ Current head branch: ${{ github.head_ref }}"
+          echo "📋 Valid examples:"
+          echo "   - release-1.2.3/"
+          echo "   - release-12.8.23/"
+          echo "   - release-2.15.7/"
           exit 1
         fi
+        
+        # Extract and display version info
+        VERSION="${{ github.head_ref }}"
+        VERSION=${VERSION#release-}
+        VERSION=${VERSION%/}
+        MAJOR=$(echo "$VERSION" | cut -d. -f1)
+        MINOR=$(echo "$VERSION" | cut -d. -f2)
+        PATCH=$(echo "$VERSION" | cut -d. -f3)
+        
         echo "✅ PR to main from valid release branch: ${{ github.head_ref }}"
+        echo "📊 Version: $MAJOR.$MINOR.$PATCH"
+        echo "   📊 MAJOR: $MAJOR (breaking changes)"
+        echo "   🆕 MINOR: $MINOR (new features)"  
+        echo "   🔧 PATCH: $PATCH (bug fixes)"

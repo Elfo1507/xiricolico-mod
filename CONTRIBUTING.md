@@ -1,6 +1,14 @@
 # Contributing to Xiricolico Mod
-
-Thank you for your interest in contributing to Xiricolico Mod! This document provides guidelines for contributing to the project using our simplified GitFlow workflow.
+#### **Release Branches** (`release-x.y.z/`)
+- 🎯 **Purpose**: Version preparation and final testing
+- 📝 **Naming**: `release-MAJOR.MINOR.PATCH/` (e.g., `release-12.8.23/`)
+- ❌ **Direct commits**: Not allowed
+- 🔗 **Can merge to**: `main` (production) ONLY
+- ✅ **Sources**: `feature/*`, `hotfix/*`
+- 📊 **Versioning**: Follow [Semantic Versioning](docs/SEMANTIC_VERSIONING.md)
+  - **MAJOR**: Breaking changes, incompatible API changes
+  - **MINOR**: New features, backwards compatible changes  
+  - **PATCH**: Bug fixes, hotfixes, small improvementsk you for your interest in contributing to Xiricolico Mod! This document provides guidelines for contributing to the project using our simplified GitFlow workflow.
 
 ## 🌳 GitFlow Workflow (Extended)
 

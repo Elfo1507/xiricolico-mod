@@ -7,6 +7,7 @@ Welcome to the comprehensive documentation for Xiricolico Mod!
 ### 🌳 Development Workflow
 - **[GitFlow Guide](GITFLOW.md)** - Complete workflow guide with examples
 - **[Branch Protection](BRANCH_PROTECTION.md)** - Security rules and configurations
+- **[Semantic Versioning](SEMANTIC_VERSIONING.md)** - Version numbering guide and rules
 
 ### 🔧 Technical Documentation
 - **[Project Structure](../README.md#project-structure)** - Code organization

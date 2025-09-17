@@ -58,8 +58,16 @@ jobs:
           - Minecraft Forge 51.0.33+
           - Java 17+
           
-          ### 📋 Changelog
-          See the commit history for detailed changes in this release.
+          ### � Version Information
+          This release follows [Semantic Versioning](https://semver.org/):
+          - **MAJOR**: Breaking changes, incompatible API changes
+          - **MINOR**: New features, backwards compatible changes
+          - **PATCH**: Bug fixes, hotfixes, small improvements
+          
+          ### �📋 Changelog
+          See the commit history and pull requests for detailed changes in this release.
+          
+          For version increment guidelines, see our [Semantic Versioning Guide](https://github.com/Elfo1507/xiricolico-mod/blob/main/docs/SEMANTIC_VERSIONING.md).
         draft: false
         prerelease: false
         

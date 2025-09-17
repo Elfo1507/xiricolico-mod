@@ -28,8 +28,11 @@ print_usage() {
     echo "  finish-feature        - Show feature completion options"
     echo ""
     echo -e "${GREEN}Release Workflow:${NC}"
-    echo "  release <version>     - Create release branch (x.x.x format)"
+    echo "  release <version>     - Create release branch (MAJOR.MINOR.PATCH)"
     echo "  finish-release        - Merge release to main and tag"
+    echo ""
+    echo "  📊 Version examples: 1.2.0, 12.8.23, 2.15.7"
+    echo "     MAJOR.MINOR.PATCH format required"
     echo ""
     echo -e "${GREEN}Hotfix Workflow:${NC}"
     echo "  hotfix <name>         - Create hotfix branch from main"
@@ -79,10 +82,29 @@ get_current_branch() {
 validate_version() {
     local version="$1"
     if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        print_error "Version must follow semantic versioning (x.x.x)"
-        print_info "Example: 1.2.0"
+        print_error "Version must follow semantic versioning (MAJOR.MINOR.PATCH)"
+        echo ""
+        print_info "📋 Examples of valid versions:"
+        print_info "   - 1.0.0 (initial release)"
+        print_info "   - 12.8.23 (major 12, minor 8, patch 23)"
+        print_info "   - 2.15.7 (major 2, minor 15, patch 7)"
+        echo ""
+        print_info "📊 Version increment rules:"
+        print_info "   - MAJOR: Breaking changes, incompatible API changes"
+        print_info "   - MINOR: New features, backwards compatible changes"
+        print_info "   - PATCH: Bug fixes, hotfixes, small improvements"
         exit 1
     fi
+    
+    # Extract version numbers for validation
+    local major=$(echo "$version" | cut -d. -f1)
+    local minor=$(echo "$version" | cut -d. -f2)
+    local patch=$(echo "$version" | cut -d. -f3)
+    
+    print_success "Valid semantic version: $version"
+    print_info "   📊 MAJOR: $major (breaking changes)"
+    print_info "   🆕 MINOR: $minor (new features)"
+    print_info "   🔧 PATCH: $patch (bug fixes/hotfixes)"
 }
 
 # Create story branch

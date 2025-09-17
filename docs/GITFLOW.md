@@ -39,17 +39,21 @@ Complete features composed of multiple stories.
 - ✅ Can merge to `develop` or `release-x.x.x/`
 - 🎯 1-2 weeks of work
 
-### 🚀 **Release Branches** (`release-x.x.x/`)
-Version preparation and final testing.
+### 🚀 **Release Branches** (`release-x.y.z/`)
+Version preparation and final testing using [Semantic Versioning](SEMANTIC_VERSIONING.md).
 
 **Examples:**
-- `release-1.2.0/`
-- `release-2.0.0/`
+- `release-1.2.0/` - Minor feature release
+- `release-12.8.23/` - High version numbers supported
+- `release-2.15.7/` - Major 2, many features, patch 7
 
 **Rules:**
 - ❌ No direct commits
 - ✅ Only merges to `main`
-- 🎯 Semantic versioning required
+- 🎯 **MAJOR.MINOR.PATCH** format required
+- 📊 **MAJOR**: Breaking changes (incompatible API changes)
+- 🆕 **MINOR**: New features (backwards compatible)
+- 🔧 **PATCH**: Bug fixes, hotfixes, small improvements
 
 ### 🔧 **Develop Branch**
 Integration testing environment.
@@ -151,10 +155,19 @@ feature/technomage-mobs
 
 ### Release Branches
 ```
-release-x.x.x/
-release-1.2.0/
-release-2.0.0/
+release-x.y.z/
+release-1.2.0/     ✅ Initial feature release
+release-12.8.23/   ✅ High version numbers supported
+release-2.15.7/    ✅ Major 2, many features, patch 7
+release-100.0.0/   ✅ Century milestone (hypothetical)
 ```
+
+**Version Increment Rules:**
+- **PATCH (z)**: Bug fixes, hotfixes → `1.2.3 → 1.2.4`
+- **MINOR (y)**: New features → `1.2.4 → 1.3.0` 
+- **MAJOR (x)**: Breaking changes → `1.3.5 → 2.0.0`
+
+See [Semantic Versioning Guide](SEMANTIC_VERSIONING.md) for detailed rules.
 
 ### Hotfix Branches
 ```
